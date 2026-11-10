@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>SmallStay — Hotel Operations v1.7 online</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ================= ENTRY ================= -->
+<div id="entry">
+  <div class="entry-card">
+    <div class="monogram" aria-hidden="true">SS</div>
+    <h1>SmallStay</h1>
+    <p class="entry-sub"><span data-i18n="entrySub">Staff Operations — SmallStay v1</span><br /><span class="small" data-i18n="entrySub2">Private staff app. Not a public guest page.</span></p>
+
+    <div class="filebadge" id="storageBadge">
+      <span aria-hidden="true">⚠</span>
+      <span><strong data-i18n="storageNoteT">Your data lives in this browser, on this computer only.</strong> <span data-i18n="storageNote">Check-ins, guests, cleaning, inspections, maintenance, staff, room types and settings are saved on this computer and are still here when you close and reopen this file. It does not sync to another computer or phone. Use Backup in Settings to move your data or keep a safe copy. Do not use private / incognito browsing for real data.</span></span>
+    </div>
+
+    <div class="authbox" id="wizardBox">
+      <h3 style="margin:0">Step 1 — Set up your hotel</h3>
+      <p class="small muted" style="margin:6px 0 0">This is the first step, before the owner account. The hotel name, price and rooms you enter here are used everywhere in the app. Floors and room numbers are set here — to change them later, back up your data, then start fresh and run the wizard again.</p>
+      <label><span>Hotel name</span><input id="wzHotelName" type="text" autocomplete="organization" placeholder="e.g. Green Valley Hotel" /></label>
+      <label><span>Address (optional)</span><input id="wzAddress" type="text" placeholder="e.g. Main Street" /></label>
+      <label><span>Currency</span><select id="wzCurrency"><option value="IQD">IQD — Iraqi dinar</option><option value="USD">USD — US dollar</option></select></label>
+      <label><span>Default room price per night</span><input id="wzPrice" type="number" min="1" step="1" value="50000" /></label>
+      <label><span>First guest floor</span><input id="wzFirstFloor" type="number" min="0" max="20" value="1" /></label>
+      <label><span>Number of guest floors</span><input id="wzFloorCount" type="number" min="1" max="12" value="3" /></label>
+      <label><span>Rooms per floor (1–12)</span><input id="wzRoomsPerFloor" type="number" min="1" max="12" value="10" /></label>
+      <p class="small" style="margin:8px 0 0">Rooms are numbered by floor: floor 1, 10 rooms = 101–110; floor 2 = 201–210, and so on.</p>
+      <p class="small errtext" id="wzMsg" style="margin:8px 0 0"></p>
+      <button class="bigbtn btn-teal" style="width:100%;margin-top:12px" id="btnWizard">Save hotel setup &amp; continue</button>
+    </div>
+
+    <div class="authbox hidden" id="setupBox">
+      <h3 style="margin:0" data-i18n="setupT">First use — create your owner account</h3>
+      <p class="small muted" style="margin:6px 0 0" data-i18n="setupB">There is no default password. Choose your own owner username and PIN (at least 4 characters). PINs are stored only as a salted hash — never in plain text. Write them down somewhere safe.</p>
+      <label><span data-i18n="yourName">Your name</span><input id="suName" type="text" autocomplete="name" /></label>
+      <label><span data-i18n="ownerUser">Owner username</span><input id="suUser" type="text" autocomplete="username" /></label>
+      <label><span data-i18n="ownerPin">Owner PIN (at least 4 characters)</span><input id="suPin" type="password" autocomplete="new-password" /></label>
+      <label><span data-i18n="pinAgain">Type the PIN again</span><input id="suPin2" type="password" autocomplete="new-password" /></label>
+      <p class="small errtext" id="suMsg" style="margin:8px 0 0"></p>
+      <button class="bigbtn btn-teal" style="width:100%;margin-top:12px" id="btnSetup" data-i18n="createOwner">Create owner account &amp; start</button>
+    </div>
+
+    <div class="authbox hidden" id="signinBox">
+      <h3 style="margin:0" data-i18n="signinT">Sign in — real hotel data</h3>
+      <p class="small muted" style="margin:6px 0 0" data-i18n="signinB">Sign in with the username and PIN made on this computer. The owner makes staff accounts inside the app (Team page).</p>
+      <h4 style="margin:14px 0 4px" data-i18n="whoSignin">Who is signing in?</h4>
+      <p class="small muted" style="margin:0 0 8px" data-i18n="whoSigninB">Tap your name, then type your PIN.</p>
+      <div class="pickrow" id="whoList" style="margin-bottom:10px"></div>
+      <label><span data-i18n="username">Username</span><input id="siUser" type="text" autocomplete="username" /></label>
+      <label><span data-i18n="pin">PIN</span><input id="siPin" type="password" autocomplete="current-password" /></label>
+      <p class="small errtext" id="siMsg" style="margin:8px 0 0"></p>
+      <button class="bigbtn btn-teal" style="width:100%;margin-top:12px" id="btnSignin" data-i18n="signin">Sign in</button>
+      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+        <button class="bigbtn btn-ghost btn-sm" id="btnRecoveryToggle" data-i18n="recoveryToggle">Locked out? Start fresh — erase this hotel's data and set up again</button>
+        <div class="hidden" id="recoveryBox" style="margin-top:10px">
+          <div class="dangerbox">
+            <p class="small" style="margin:0"><strong data-i18n="recoveryWarn">This erases ALL real hotel data saved on this computer</strong> — <span data-i18n="recoveryWarn2">staff accounts, rooms and room types, guests and stays, cleaning, inspections, maintenance tickets, reports and settings — and returns the app to first-use owner setup. It does not let anyone read the existing data. It cannot be undone. Download a backup first if you can still sign in.</span></p>
+            <p class="small" style="font-weight:700;margin:10px 0 6px" data-i18n="recStep1">Step 1 of 2 — Are you sure?</p>
+            <button class="bigbtn btn-dark btn-sm" id="btnRecoverySure" data-i18n="recSure">Yes, I am sure — continue</button>
+            <div class="hidden" id="recoveryStep2" style="margin-top:12px">
+              <label class="small" style="font-weight:700"><span data-i18n="recStep2">Step 2 of 2 — Type</span> <strong>DELETE</strong> <span data-i18n="recStep2b">to confirm</span><input id="recoveryText" type="text" style="width:100%;margin-top:5px" /></label>
+              <div style="margin-top:10px"><button class="bigbtn btn-red" id="btnRecoveryErase" disabled style="opacity:.5" data-i18n="recErase">Erase all real data now</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:20px">
+      <button class="bigbtn btn-ghost btn-sm" id="btnDemoToggle" data-i18n="tryDemoLink">Try demo — sample data</button>
+    </div>
+    <div id="demoBox" class="hidden" style="border-top:1.5px solid var(--line);margin-top:16px;padding-top:16px">
+      <button class="bigbtn btn-dark" style="width:100%" id="btnDemo" data-i18n="tryDemo">Try demo — sample data</button>
+      <p class="small muted" style="text-align:center;margin:8px 0 2px" data-i18n="demoNote">The demo uses fictional sample data only, kept completely separate. It never reads, changes, backs up or restores your real hotel data. Exit demo returns to real sign-in. No account or PIN needed for the demo.</p>
+      <h3 style="margin:16px 0 4px" data-i18n="demoAs">Demo — enter as a job (Simple mode)</h3>
+      <p class="small muted" style="margin:0" data-i18n="demoAsSub">Each worker sees their own work first, on one simple screen with big buttons, plus a “View all rooms” button to see every room's status. These buttons open the demo.</p>
+      <div class="rolegrid">
+        <button class="rolebtn" data-role="owner">Owner (demo)<span data-i18n="demoFull">Full app, all sections — sample data</span></button>
+        <button class="rolebtn" data-role="manager">Manager (demo)<span data-i18n="demoFull">Full app, all sections — sample data</span></button>
+        <button class="rolebtn" data-role="reception">Reception (demo)<span>Check-in / Check-out, plus View all rooms</span></button>
+        <button class="rolebtn" data-role="housekeeper">Housekeeper (demo)<span>My cleaning tasks, plus View all rooms</span></button>
+        <button class="rolebtn" data-role="maintenance">Maintenance (demo)<span>My repair tickets, plus View all rooms</span></button>
+        <button class="rolebtn" data-role="supervisor">Supervisor (demo)<span>Rooms to inspect + repairs to check, plus View all rooms</span></button>
+      </div>
+    </div>
+
+    <div class="howto">
+      <strong data-i18n="howtoT">How to use this app</strong>
+      <ol>
+        <li data-i18n="howto1">This one file is the whole app — double-click it and it opens in the browser, no install, no internet needed; it works fully offline. No photos or assets folder are needed.</li>
+        <li data-i18n="howto2">First time: set up your hotel in the Setup Wizard below, then create your owner username and PIN. After that, sign in with them.</li>
+        <li data-i18n="howto3">Always use the same browser on the same computer — your data is saved in that browser. Closing the file or the browser does not lose it.</li>
+        <li data-i18n="howto4">To move to another computer: in Settings tap Download backup, copy the backup file there, open this app file there, set up or sign in, and use Restore from backup.</li>
+      </ol>
+    </div>
+    <div class="langbar" style="justify-content:center;margin-top:16px" role="group" aria-label="Language">
+      <button class="langbtn active" data-lang="en">English</button>
+      <button class="langbtn" data-lang="ar">العربية</button>
+      <button class="langbtn" data-lang="ku">کوردی</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar">
+    <div>
+      <div class="monogram sm" aria-hidden="true">SS</div>
+      <div class="hname" id="hotelNameEl">SmallStay</div>
+      <div class="hsub" data-i18n="staffWs">Staff workspace</div>
+      <div class="tag tag-green" id="modeTag">SmallStay</div>
+    </div>
+    <nav id="mainNav" aria-label="Main"></nav>
+    <div class="sidefoot">
+      <span id="sideModeText">Real hotel data — saved on this computer.</span>
+      <div style="margin-top:10px"><button class="bigbtn btn-ghost btn-sm" id="btnExit" data-i18n="signOut">Sign out</button></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="filebar real" id="dataBar"><span id="dataBarTitle">Real hotel data — saved on this computer</span><span class="small" id="dataBarSub"></span><button class="bigbtn btn-dark btn-sm hidden" id="btnExitDemo" style="margin-inline-start:auto" data-i18n="exitDemo">Exit demo</button></div>
+    <div class="warnpanel hidden" id="typeWarnBar"></div>
+
+    <div class="topbar">
+      <div>
+        <h2 id="viewTitle">Dashboard</h2>
+        <div class="muted small" id="viewSub">SmallStay</div>
+      </div>
+      <div class="langbar" role="group" aria-label="Language">
+        <button class="langbtn active" data-lang="en">English</button>
+        <button class="langbtn" data-lang="ar">العربية</button>
+        <button class="langbtn" data-lang="ku">کوردی</button>
+      </div>
+    </div>
+
+    <section id="view-dashboard">
+      <div class="statgrid" id="dashStats"></div>
+      <div class="panel">
+        <h3 data-i18n="todayWork">Today — what needs work</h3>
+        <div id="dashWork"></div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="goFloor">Go to a floor</h3>
+        <p class="small muted" data-i18n="goFloorSub">Tap a floor number to open Rooms and see that floor's rooms and their condition.</p>
+        <div class="pickrow" id="dashFloors"></div>
+      </div>
+      <div class="panel hidden" id="staffPanel">
+        <h3 data-i18n="addWorkerT">Add workers</h3>
+        <p class="small muted" data-i18n="addWorkerB">Owner: give each worker their own username and PIN here. They sign in with it and see only their own work.</p>
+        <button class="bigbtn btn-teal btn-sm" id="btnGoTeam" data-i18n="addWorkerBtn">Add a worker</button>
+      </div>
+    </section>
+
+    <section id="view-rooms" class="hidden">
+      <div class="statgrid" id="roomStats"></div>
+      <div class="layout2">
+        <div>
+          <div class="filters">
+            <select id="fType"><option value="">All room types</option><option>Single</option><option>Twin</option><option value="none">To confirm</option></select>
+            <select id="fStatus"><option value="">All statuses</option><option value="ready">Ready</option><option value="dirty">Dirty / Needs cleaning</option><option value="cleaning">Cleaning in progress</option><option value="insp">Awaiting inspection</option><option value="oos">Out of service</option><option value="occupied">Occupied</option><option value="vacant">Vacant</option></select>
+            <input id="fSearch" type="search" placeholder="Search room number…" />
+            <button class="bigbtn btn-teal btn-sm" id="btnShowAllFloors" data-i18n="showAllFloors">Show all floors</button>
+            <button class="bigbtn btn-ghost btn-sm hidden" id="btnClearFloor" data-i18n="clearFloor">Clear floor — show all rooms</button>
+          </div>
+          <div id="roomsArea"></div>
+        </div>
+        <div class="panel" style="margin-top:0">
+          <h3 data-i18n="floorsT">Floors</h3>
+          <p class="small muted" data-i18n="floorsSub">All rooms are shown. Tap a floor to see only that floor's rooms.</p>
+          <table>
+            <thead><tr><th data-i18n="thFloor">Floor</th><th data-i18n="thArea">Area / Use</th><th data-i18n="thRooms">Rooms</th></tr></thead>
+            <tbody id="floorsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-housekeeping" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3 data-i18n="cleaningTasks">Cleaning tasks</h3>
+        <p class="small muted" data-i18n="hkSub">Tap Start, do the checklist, then tap Finish — the room goes for inspection. It does not become ready by itself. Checklist progress is saved.</p>
+        <div id="hkList"></div>
+      </div>
+    </section>
+
+    <section id="view-inspections" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3 data-i18n="toInspect">Rooms to inspect</h3>
+        <p class="small muted" data-i18n="inspSub">Tap Pass — inspection is recorded as passed. Tap Fail — the room goes back for cleaning. A room is ready only when it is vacant, clean, passed inspection and in service.</p>
+        <div id="inspList"></div>
+      </div>
+    </section>
+
+    <section id="view-maintenance" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3 data-i18n="reportDamage">Report a problem</h3>
+        <p class="small muted" data-i18n="reportSub">Tap the room, tap the problem, tap the priority — then one big button. Notes are optional.</p>
+        <div class="small" style="font-weight:700">1 — <span data-i18n="roomW">Room</span></div>
+        <select id="dmgRooms" style="width:100%;max-width:430px;margin:6px 0 12px" aria-label="Room for problem report"></select>
+        <div class="small" style="font-weight:700">2 — <span data-i18n="problemW">Problem</span></div>
+        <div class="pickrow" id="dmgTypes"></div>
+        <div class="small" style="font-weight:700">3 — <span data-i18n="priorityW">Priority</span></div>
+        <div class="pickrow" id="dmgPrio"></div>
+        <label class="small" style="font-weight:700"><span data-i18n="noteOpt">Note (optional)</span><input id="dmgNote" type="text" style="width:100%;margin-top:5px" /></label>
+        <div style="margin-top:12px"><button class="bigbtn btn-red" id="btnReportDmg" data-i18n="reportBtn">Report problem</button></div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="myTickets">Repair tickets</h3>
+        <p class="small muted" data-i18n="ticketsSub">Tap one big button on a ticket: Working on it, Fixed, Out of service, or Needs parts. “Fixed” sends the ticket for a check — it does not close it. Only Supervisor, Manager or Owner can close a checked ticket or send it back.</p>
+        <div id="ticketList"></div>
+      </div>
+      <div class="panel" id="checkPanel">
+        <h3 data-i18n="repairsCheck">Repairs to check</h3>
+        <p class="small muted" data-i18n="repairsCheckSub">A worker tapped “Fixed”. Check the room, then tap Checked — OK to close the ticket, or Not fixed yet to send it back.</p>
+        <div id="checkList"></div>
+      </div>
+      <div class="panel hidden" id="assignPanel">
+        <h3 data-i18n="assignT">Unassigned repairs — assign a maintenance worker</h3>
+        <div id="assignList"></div>
+      </div>
+      <div class="panel hidden" id="releasePanel">
+        <h3 data-i18n="releaseT">Out-of-service rooms — release back into service</h3>
+        <p class="small muted" data-i18n="releaseSub">Supervisor, Manager or Owner only. A room can be released only when it has no other unresolved blocking tickets.</p>
+        <div id="releaseList"></div>
+      </div>
+    </section>
+
+    <section id="view-checkin" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3><span data-i18n="chooseReady">Choose a room for check-in</span> — <span class="tag tag-green" id="readyCountTag">Ready rooms: 0</span></h3>
+        <p class="small muted" data-i18n="readyOnly">Only ready rooms show here: vacant, clean, inspection passed, and in service. The room is checked again when you save the check-in.</p>
+        <div id="readyRoomsArea"></div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="checkinForm">Check-in</h3>
+        <div class="formgrid">
+          <label><span data-i18n="roomReadyOnly">Room (ready rooms only)</span><select id="ciRoom"></select></label>
+          <label><span data-i18n="nights">Nights</span><input id="ciNights" type="number" min="1" value="1" /></label>
+          <label><span data-i18n="departDate">Planned departure date</span><input id="ciDepart" type="date" /></label>
+          <label><span data-i18n="guestPaysPct">Guest pays % — the share the guest actually pays</span><input id="ciPct" type="number" min="0" max="100" value="100" /></label>
+        </div>
+        <h4 style="margin:14px 0 4px" data-i18n="mainGuest">Guest details — main guest</h4>
+        <div id="ciGuestFields"></div>
+        <p class="small errtext hidden" id="ciError"></p>
+        <div class="calcbox" id="ciCalc"></div>
+        <button class="bigbtn btn-teal" id="btnCheckIn" data-i18n="checkIn">Check in</button>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="inHouse">In house now — check out</h3>
+        <div id="inHouseList"></div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="staysT">Stays — current and checked out</h3>
+        <div class="filters">
+          <input id="staySearch" type="search" placeholder="Search room or guest name…" />
+          <input id="stayDate" type="date" aria-label="Search by date" />
+          <select id="stayFilter"><option value="all">All stays</option><option value="in">Current stays</option><option value="out">Checked-out stays</option><option value="overdue">Overdue stays</option></select>
+        </div>
+        <div id="staysList"></div>
+      </div>
+    </section>
+
+    <section id="view-reports" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3 data-i18n="dailyReport">Daily Report</h3>
+        <p class="small muted" data-i18n="reportConv">Reporting convention: a “night” belongs to the date the night starts. “Revenue for this date” counts one night's agreed amount for each room occupied that night — never the whole multi-night stay total. Check-ins and check-outs are listed by the date they actually happened.</p>
+        <div class="formgrid" style="max-width:520px">
+          <label><span data-i18n="dateW">Date</span><input id="repDate" type="date" /></label>
+        </div>
+        <div class="statgrid" id="repTotals"></div>
+        <div id="repBody"></div>
+        <div style="margin-top:14px"><button class="bigbtn btn-dark btn-sm" id="btnCsv" data-i18n="csvBtn">Download CSV</button></div>
+      </div>
+    </section>
+
+    <section id="view-team" class="hidden">
+      <div class="panel" id="accountsPanel" style="margin-top:0">
+        <h3 data-i18n="accountsT">Staff accounts — sign-in usernames &amp; PINs</h3>
+        <p class="small muted" data-i18n="accountsB">Owner or Manager creates each worker's account here. Each person signs in with their own username and PIN. PINs are stored only as salted hashes and are never shown in lists or exports. Owner and Manager always use the full app; working staff start in Simple mode — only Owner/Manager can switch a worker to Full mode.</p>
+        <div id="acFormWrap">
+          <div class="formgrid">
+            <label><span data-i18n="fullName">Full name</span><input id="acName" type="text" /></label>
+            <label><span data-i18n="username">Username</span><input id="acUser" type="text" /></label>
+            <label><span data-i18n="pinSet">PIN (at least 4 characters)</span><input id="acPin" type="text" /></label>
+            <label><span data-i18n="roleW">Job / role</span><select id="acRole"><option value="reception">Reception</option><option value="housekeeper">Housekeeper</option><option value="maintenance">Maintenance</option><option value="supervisor">Supervisor</option><option value="manager">Manager</option><option value="owner">Owner</option></select></label>
+          </div>
+          <p class="small errtext" id="acMsg" style="margin:8px 0 0"></p>
+          <div style="margin-top:10px"><button class="bigbtn btn-teal" id="btnAddStaff" data-i18n="createStaff">Create staff account</button></div>
+        </div>
+        <div id="accountsList" style="margin-top:12px"></div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="teamT">Team — who sees what</h3>
+        <p class="small muted" data-i18n="teamB">Working staff in Simple mode see only their own work, with a button to view all rooms. Full mode still respects each role's permissions.</p>
+        <div id="teamList"></div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="hidden">
+      <div class="panel">
+        <h3 data-i18n="floorStructureT">Hotel floor structure</h3>
+        <p class="small" data-i18n="floorStructureB">Guest rooms are set in the Setup Wizard. The floors, room count and room numbers for this hotel are shown in Settings once the hotel is set up.</p>
+      </div>
+      <div class="panel">
+        <h3>About SmallStay</h3>
+        <p class="small">SmallStay v1.7 online — $29/month flat, no per-room fee. Works offline. No Booking.com sync. Data is saved on the server and works on any device — use Backup to keep a safe copy.</p>
+        <p class="small muted" id="aboutHotelLine"></p>
+      </div>
+      <div class="panel" id="pricePanel">
+        <h3 data-i18n="priceT">Room price</h3>
+        <p class="small" data-i18n="priceB">Default price per room per night. Changing it affects new check-ins only — amounts already agreed on existing stays never change.</p>
+        <div class="formgrid" style="max-width:420px">
+          <label><span data-i18n="pricePerNight">Price per night</span><input id="setPrice" type="number" min="0" step="1000" /></label>
+        </div>
+        <div style="margin-top:10px"><button class="bigbtn btn-teal btn-sm" id="btnSavePrice" data-i18n="savePrice">Save price</button></div>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="yourDataT">Your data on this computer</h3>
+        <p class="small" data-i18n="yourDataB">Real hotel data is saved in this browser, on this computer, and stays after you close the file, close the browser, and reopen the file later. It does not sync to another computer, phone, or browser. Clearing this browser's data, or using a different browser or computer, will not have the same data — use Backup below to move it or keep a safe copy.</p>
+        <p class="small" data-i18n="securityB">Honest security note: PINs are stored as salted hashes, never in plain text, and every action checks the signed-in role inside the operation itself, not just by hiding buttons. But a standalone browser file cannot be tamper-proof against someone who controls this computer — they could edit the file or its saved data. For shared, multi-computer production use with real enforcement, the hotel needs a server version where authorization is checked on the server.</p>
+        <div id="migrationInfo"></div>
+      </div>
+      <div class="panel" id="backupPanel">
+        <h3 data-i18n="backupT">Backup &amp; Restore</h3>
+        <p class="small muted" data-i18n="backupB">Download backup saves all real hotel data — rooms, room types, guests and stays, cleaning, inspections, maintenance, staff accounts (hashed PINs only) and settings — as one versioned file. Restore validates the file first and replaces the real data only if the file is fully valid. Backup and restore require a signed-in Owner or Manager and are disabled in demo.</p>
+        <div class="btnrow">
+          <button class="bigbtn btn-teal" id="btnBackup" data-i18n="downloadBackup">Download backup</button>
+          <label class="bigbtn btn-dark" for="restoreFile" style="margin:0" data-i18n="restoreBtn">Restore from backup…</label>
+          <input id="restoreFile" type="file" accept=".json,application/json" class="hidden" />
+        </div>
+        <div class="authbox hidden" id="restoreConfirm">
+          <p class="small" id="restoreSummary" style="margin:0"></p>
+          <p class="small errtext" data-i18n="restoreWarn">This replaces ALL real hotel data on this computer with the backup. Your demo is not affected.</p>
+          <div class="btnrow">
+            <button class="bigbtn btn-red" id="btnRestoreYes" data-i18n="restoreYes">Yes — restore this backup</button>
+            <button class="bigbtn btn-ghost" id="btnRestoreNo" data-i18n="cancel">Cancel</button>
+          </div>
+        </div>
+        <p class="small errtext hidden" id="restoreError"></p>
+      </div>
+      <div class="panel">
+        <h3 data-i18n="v3notesT">SmallStay v1 — what changed, tests, and limits</h3>
+        <div id="v3Notes" class="small"></div>
+      </div>
+      <div class="panel hidden" id="freshPanel">
+        <h3 data-i18n="freshT">Start fresh — erase all real data</h3>
+        <div class="dangerbox">
+          <p class="small" style="margin:0" data-i18n="freshB">Owner only. This erases all real hotel data on this computer — accounts, rooms, guests, stays, tickets and settings — and returns the app to first-use owner setup. The demo is not affected. Download a backup first if you may need this data again. This cannot be undone.</p>
+          <div style="margin-top:12px"><button class="bigbtn btn-red" id="btnFreshStart" data-i18n="freshBtn">Start fresh — erase all real data…</button></div>
+          <div class="hidden" id="freshConfirm" style="margin-top:14px">
+            <p class="small" style="font-weight:700;margin:0 0 6px" data-i18n="recStep1">Step 1 of 2 — Are you sure?</p>
+            <button class="bigbtn btn-dark btn-sm" id="btnFreshSure" data-i18n="recSure">Yes, I am sure — continue</button>
+            <div class="hidden" id="freshStep2" style="margin-top:12px">
+              <label class="small" style="font-weight:700"><span data-i18n="recStep2">Step 2 of 2 — Type</span> <strong>DELETE</strong> <span data-i18n="recStep2b">to confirm</span><input id="freshText" type="text" style="width:100%;margin-top:5px" /></label>
+              <div style="margin-top:10px"><button class="bigbtn btn-red" id="btnFreshErase" disabled style="opacity:.5" data-i18n="recErase">Erase all real data now</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-easy" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3 id="easyTitle">My work</h3>
+        <p class="small muted" id="easySub"></p>
+        <div id="easyBody"></div>
+        <div style="margin-top:16px;border-top:1.5px solid var(--line);padding-top:12px">
+          <button class="bigbtn btn-ghost" id="btnEasyRooms" data-i18n="viewAllRooms">View all rooms</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-allrooms" class="hidden">
+      <div class="panel" style="margin-top:0">
+        <h3 data-i18n="allRoomsT">All rooms — view only</h3>
+        <p class="small muted" data-i18n="allRoomsSub">Tap a floor to see its rooms and their status. Guest names only — no private details.</p>
+        <div class="pickrow" id="arFloors"></div>
+        <div id="arArea"></div>
+        <div style="margin-top:14px"><button class="bigbtn btn-teal btn-sm" id="btnBackEasy" data-i18n="backToWork">Back to my work</button></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="roomModal" class="modalwrap hidden" role="dialog" aria-modal="true" aria-labelledby="rmTitle">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+      <h3 id="rmTitle">Room</h3>
+      <button class="bigbtn btn-ghost btn-sm" id="rmClose" data-i18n="close">Close</button>
+    </div>
+    <div id="rmBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+<script src="app.js"></script>
+</body>
+</html>

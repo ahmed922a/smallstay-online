@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: smallstay-online
+    env: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: /app/data/smallstay.db
+      - key: SESSION_SECRET
+        generateValue: true
+    healthCheckPath: /api/health

@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.2"
+  },
+  "description": "SmallStay Online v1 \u2014 small-hotel operations app (Node.js + Express + SQLite)",
+  "engines": {
+    "node": ">=20"
+  },
+  "name": "smallstay-online",
+  "private": true,
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test tests/api.test.js"
+  },
+  "type": "commonjs",
+  "version": "1.0.0"
+}
