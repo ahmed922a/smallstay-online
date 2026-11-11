@@ -228,7 +228,7 @@ checkedIn:"Checked in",checkedOut:"Checked out — room is now Dirty and awaitin
 noReadyRooms:"No rooms ready for check-in",noTasks:"Nothing here right now.",overdue:"OVERDUE",
 byStaff:"by",totalPaid:"Total agreed",perNight:"per night",nightWord:"night(s)",
 repCheckins:"Check-ins on this date",repCheckouts:"Check-outs on this date",repInhouse:"Rooms occupied during this date / night",repLive:"Current occupancy right now (live)",repRevenue:"Revenue for this date (one night per occupied room)",repCounts:"Room counts",repNoHist:"Status counts for past dates come from daily snapshots saved by SmallStay. Dates before SmallStay use cannot be reconstructed and are not invented.",
-readyW:"Ready",occupiedW:"Occupied",dirtyW:"Dirty",awaitingW:"Awaiting inspection",oosW:"Out of service",
+readyW:"Ready",occupiedW:"Occupied",dirtyW:"Dirty",awaitingW:"Awaiting inspection",oosW:"Out of service",occupancyW:"Occupancy",revenueTodayW:"Revenue today",
 openTickets:"Open maintenance tickets",outstandingCleaning:"Outstanding cleaning tasks",
 typeWarn:"Room types are not confirmed for {n} room(s). The Owner must confirm each floor's room type in Rooms before those rooms are sold as Single or Twin.",
 modeSimple:"Simple mode",modeFull:"Full mode",switchFull:"Switch to Full",switchSimple:"Switch to Simple",removeAcc:"Remove account",noPinSet:"No PIN set — owner must reset",
@@ -553,10 +553,31 @@ function stayMoneyLine(s){
 }
 
 /* ================= Dashboard ================= */
+/* Today's revenue — same rule as the server report: one night's agreed
+   amount for each room occupied tonight (basePrice x guest-pays %).
+   Only stays the server sent with prices count, so a role without private
+   stay data simply gets no tile instead of a wrong 0. */
+function todayRevenue(){
+  var d = todayStr(), rev = 0, priced = false;
+  stays.forEach(function(s){
+    if (typeof s.basePrice !== "number" || typeof s.pct !== "number") return;
+    priced = true;
+    if (s.checkInDate > d) return;
+    if (s.checkOutAt){
+      var co = String(s.checkOutAt).slice(0, 10);
+      if (!(co > d || co === s.checkInDate)) return;
+    } else if (s.status === "in") { /* staying tonight */ }
+    else if (!(s.plannedOut > d)) return;
+    rev += Math.round(s.basePrice * s.pct / 100);
+  });
+  return priced ? rev : null;
+}
 function renderDashboard(){
   if (!$("dashStats")) return;
   var c = counts();
-  $("dashStats").innerHTML = statCard(c.ready, t("readyW")) + statCard(c.occupied, t("occupiedW"), "stat-occ") + statCard(c.dirty, t("dirtyW")) + statCard(c.insp, t("awaitingW")) + statCard(c.oos, t("oosW")) + statCard(rooms.filter(function(r){return !r.type;}).length, t("typeToConfirm"));
+  var occPct = c.total ? Math.round(c.occupied / c.total * 100) : 0;
+  var rev = todayRevenue();
+  $("dashStats").innerHTML = statCard(c.ready, t("readyW")) + statCard(c.occupied, t("occupiedW"), "stat-occ") + statCard(c.dirty, t("dirtyW")) + statCard(c.insp, t("awaitingW")) + statCard(c.oos, t("oosW")) + statCard(rooms.filter(function(r){return !r.type;}).length, t("typeToConfirm")) + statCard(occPct + "%", t("occupancyW")) + (rev === null ? "" : statCard(fmt(rev), t("revenueTodayW") + " · " + (DB.currency || "IQD"), "stat-money"));
   var work = [];
   var overdue = stays.filter(function(s){ return s.status==="in" && s.plannedOut < todayStr(); });
   if (overdue.length) work.push('<div class="itemrow"><h4>' + esc(t("overdue")) + " — " + overdue.length + '</h4><div class="small">' + overdue.map(function(s){ return esc(t("room")) + " " + s.room + " (" + esc(s.guests[0].name) + ", " + esc(t("departDate")) + ": " + s.plannedOut + ")"; }).join("<br />") + "</div></div>");
