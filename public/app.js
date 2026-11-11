@@ -1646,25 +1646,14 @@ function wire(){
   $("btnSetup").addEventListener("click", doSetup);
   $("btnSignin").addEventListener("click", doSignin);
   $("siPin").addEventListener("keydown", function(e){ if (e.key === "Enter") doSignin(); });
-  $("btnDemo").addEventListener("click", function(){ enterDemo("owner"); });
-  var dt = $("btnDemoToggle"); if (dt) dt.addEventListener("click", function(){ $("demoBox").classList.remove("hidden"); dt.classList.add("hidden"); });
+  /* NOTE: the entry screen has no demo entry and no sign-in recovery
+     button — removed so the hotel's sign-in looks finished and no one
+     can erase the hotel or open a sample demo from the login page.
+     (The demo backend and the owner-only Start fresh in Settings are
+     unchanged.) */
   var gt = $("btnGoTeam"); if (gt) gt.addEventListener("click", function(){ showView("team"); });
-  document.querySelectorAll(".rolebtn").forEach(function(b){
-    b.addEventListener("click", function(){ enterDemo(b.getAttribute("data-role")); });
-  });
   $("btnExit").addEventListener("click", exitToEntry);
   $("btnExitDemo").addEventListener("click", exitToEntry);
-  /* sign-in recovery reset (owner must be signed in — see eraseAllRealData) */
-  $("btnRecoveryToggle").addEventListener("click", function(){ $("recoveryBox").classList.toggle("hidden"); });
-  $("btnRecoverySure").addEventListener("click", function(){ $("recoveryStep2").classList.remove("hidden"); });
-  $("recoveryText").addEventListener("input", function(){
-    var ok = this.value.trim().toUpperCase() === "DELETE";
-    $("btnRecoveryErase").disabled = !ok; $("btnRecoveryErase").style.opacity = ok ? "1" : ".5";
-  });
-  $("btnRecoveryErase").addEventListener("click", function(){
-    if ($("recoveryText").value.trim().toUpperCase() !== "DELETE") return;
-    eraseAllRealData();
-  });
   /* rooms */
   $("fType").addEventListener("change", renderAll);
   $("fStatus").addEventListener("change", renderAll);

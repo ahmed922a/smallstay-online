@@ -58,48 +58,6 @@
       <label><span data-i18n="pin">PIN</span><input id="siPin" type="password" autocomplete="current-password" /></label>
       <p class="small errtext" id="siMsg" style="margin:8px 0 0"></p>
       <button class="bigbtn btn-teal" style="width:100%;margin-top:12px" id="btnSignin" data-i18n="signin">Sign in</button>
-      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
-        <button class="bigbtn btn-ghost btn-sm" id="btnRecoveryToggle" data-i18n="recoveryToggle">Locked out? Start fresh — erase this hotel's data and set up again</button>
-        <div class="hidden" id="recoveryBox" style="margin-top:10px">
-          <div class="dangerbox">
-            <p class="small" style="margin:0"><strong data-i18n="recoveryWarn">This erases ALL real hotel data saved on this computer</strong> — <span data-i18n="recoveryWarn2">staff accounts, rooms and room types, guests and stays, cleaning, inspections, maintenance tickets, reports and settings — and returns the app to first-use owner setup. It does not let anyone read the existing data. It cannot be undone. Download a backup first if you can still sign in.</span></p>
-            <p class="small" style="font-weight:700;margin:10px 0 6px" data-i18n="recStep1">Step 1 of 2 — Are you sure?</p>
-            <button class="bigbtn btn-dark btn-sm" id="btnRecoverySure" data-i18n="recSure">Yes, I am sure — continue</button>
-            <div class="hidden" id="recoveryStep2" style="margin-top:12px">
-              <label class="small" style="font-weight:700"><span data-i18n="recStep2">Step 2 of 2 — Type</span> <strong>DELETE</strong> <span data-i18n="recStep2b">to confirm</span><input id="recoveryText" type="text" style="width:100%;margin-top:5px" /></label>
-              <div style="margin-top:10px"><button class="bigbtn btn-red" id="btnRecoveryErase" disabled style="opacity:.5" data-i18n="recErase">Erase all real data now</button></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="text-align:center;margin-top:20px">
-      <button class="bigbtn btn-ghost btn-sm" id="btnDemoToggle" data-i18n="tryDemoLink">Try demo — sample data</button>
-    </div>
-    <div id="demoBox" class="hidden" style="border-top:1.5px solid var(--line);margin-top:16px;padding-top:16px">
-      <button class="bigbtn btn-dark" style="width:100%" id="btnDemo" data-i18n="tryDemo">Try demo — sample data</button>
-      <p class="small muted" style="text-align:center;margin:8px 0 2px" data-i18n="demoNote">The demo uses fictional sample data only, kept completely separate. It never reads, changes, backs up or restores your real hotel data. Exit demo returns to real sign-in. No account or PIN needed for the demo.</p>
-      <h3 style="margin:16px 0 4px" data-i18n="demoAs">Demo — enter as a job (Simple mode)</h3>
-      <p class="small muted" style="margin:0" data-i18n="demoAsSub">Each worker sees their own work first, on one simple screen with big buttons, plus a “View all rooms” button to see every room's status. These buttons open the demo.</p>
-      <div class="rolegrid">
-        <button class="rolebtn" data-role="owner">Owner (demo)<span data-i18n="demoFull">Full app, all sections — sample data</span></button>
-        <button class="rolebtn" data-role="manager">Manager (demo)<span data-i18n="demoFull">Full app, all sections — sample data</span></button>
-        <button class="rolebtn" data-role="reception">Reception (demo)<span>Check-in / Check-out, plus View all rooms</span></button>
-        <button class="rolebtn" data-role="housekeeper">Housekeeper (demo)<span>My cleaning tasks, plus View all rooms</span></button>
-        <button class="rolebtn" data-role="maintenance">Maintenance (demo)<span>My repair tickets, plus View all rooms</span></button>
-        <button class="rolebtn" data-role="supervisor">Supervisor (demo)<span>Rooms to inspect + repairs to check, plus View all rooms</span></button>
-      </div>
-    </div>
-
-    <div class="howto">
-      <strong data-i18n="howtoT">How to use this app</strong>
-      <ol>
-        <li data-i18n="howto1">This one file is the whole app — double-click it and it opens in the browser, no install, no internet needed; it works fully offline. No photos or assets folder are needed.</li>
-        <li data-i18n="howto2">First time: set up your hotel in the Setup Wizard below, then create your owner username and PIN. After that, sign in with them.</li>
-        <li data-i18n="howto3">Always use the same browser on the same computer — your data is saved in that browser. Closing the file or the browser does not lose it.</li>
-        <li data-i18n="howto4">To move to another computer: in Settings tap Download backup, copy the backup file there, open this app file there, set up or sign in, and use Restore from backup.</li>
-      </ol>
     </div>
     <div class="langbar" style="justify-content:center;margin-top:16px" role="group" aria-label="Language">
       <button class="langbtn active" data-lang="en">English</button>
