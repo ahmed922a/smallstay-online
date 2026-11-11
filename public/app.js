@@ -148,7 +148,10 @@ async function api(path, opts){
   var data = null;
   try { data = await res.json(); } catch(e){ data = null; }
   if (!res.ok){
-    var err = new Error((data && data.error) || ("Request failed (" + res.status + ")"));
+    var errMsg = (data && data.error) || null;
+    if (!errMsg && res.status === 429) errMsg = "Too many requests — please wait a minute, then try again.";
+    if (!errMsg) errMsg = "Request failed (" + res.status + ")";
+    var err = new Error(errMsg);
     err.status = res.status; err.data = data;
     throw err;
   }
@@ -781,10 +784,22 @@ function renderHousekeeping(){
 }
 
 /* ================= Inspections ================= */
+/* Tap guard: one inspection tap sends a POST + a full state refresh
+   (2 requests). SnapDeploy's shared-domain free tier allows 100
+   requests/minute per IP, then blocks the IP with HTTP 429 for 10
+   minutes — so fast tapping down a long inspection list can lock the
+   user out. Keep taps at most one per 1.5 s (≈40 taps/min, 80 req/min)
+   and ignore taps while a save is still running. The room stays in the
+   list when a tap is ignored, so nothing is lost — tap it again. */
+var inspBusy = false, lastInspAt = 0;
 async function inspectRoom(num, pass){
   if (!requirePerm("inspect")) return;
+  var now = Date.now();
+  if (inspBusy || now - lastInspAt < 1500) return;
+  inspBusy = true; lastInspAt = now;
   try { await api("/api/inspections", {method:"POST", body:{room:num, pass:!!pass}}); }
-  catch(e){ toast(e.message); return; }
+  catch(e){ inspBusy = false; lastInspAt = 0; toast(e.message); return; }
+  inspBusy = false;
   saveAndRender(); toast(pass ? t("inspPassed") : t("inspFailed"));
 }
 function renderInspections(){
